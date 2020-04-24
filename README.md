@@ -39,7 +39,7 @@ To run the code note the following:
 ```
 @Article{2014:MarFaeLu,
   Title                    = {Sensor Placement for the Analysis of Seismic Surface Waves: Sources of Error, Design Criterion and Array Design Algorithms},
-  Author                   = {Stefano Maran{\`o} and Donat F\"{a}h and Yue M. Lu},
+  Author                   = {Stefano Maran\`o and Donat F\"ah and Yue M. Lu},
   Journal                  = {Geophys. J. Int.},
   Year                     = {2014},
   Month                    = {June},
