@@ -4,9 +4,11 @@
 This repository stores the code used in the publication 
 [Sensor placement for the analysis of seismic surface waves: sources of error, design criterion and array design algorithms](https://doi.org/10.1093/gji/ggt489) published on the Geophysical Journal International. [How to cite us](#bibtex-entry).
 
+Find extensive documentation and examples here: [stefanomarano.github.io/SensorPlacement](https://stefanomarano.github.io/SensorPlacement)
+
+
  * [Abstract](#abstract)
  * [Example](#example)
- * [Installation](#installation)
  * [BibTex Entry](#bibtex-entry)
 
 ## Abstract
@@ -20,19 +22,6 @@ The following picture depicts optimized array layouts for 6, 12, and 15 sensors.
 ![Examplary array layouts][ArrayLayout]
 
 [ArrayLayout]: img/ArrayLayout.png "Examplary array layouts"
-
-## Installation
-
- * Install MATLAB
- * Install and configure the solver [Gurobi](http://www.gurobi.com). You need to get a license to use Gurobi, the license is free for academic use.
- * The code was tested with Gurobi 6.5.1 and Matlab 2013b.
-
-To run the code note the following:
-
- * The folder `./utils/` needs to be in the path searchable by MATLAB
- * From the MATLAB prompt, configure Gurobi with the script `gurobi_setup.m`
- * Run the matlab script ``SensorPlacement.m``. Changing some variables in the code allows to modify design parameters including number of sensors and spatial bandwidth. See comments in the file itself.
- * Output is saved in the folder `./output/`. Each output MAT file can be loaded into matlab. The variable `pos_sol` contains the array layout found by the algorithm. The array layout can be plotted with `plotArray_C(pos_sol)`
  
 ## BibTex Entry
 
