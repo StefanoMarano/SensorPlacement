@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sensor placement for the analysis of seismic surface waves &#8212; SensorPlacement  documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Scientist’s Documentation" href="scientific.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="scientific.html" title="Scientist’s Documentation"
+             accesskey="N">next</a> |</li>
+<li><a href="https://stefanomarano.github.io/SensorPlacement">Home</a> &#187; <a href="#">SensorPlacement  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sensor-placement-for-the-analysis-of-seismic-surface-waves">
+<h1>Sensor placement for the analysis of seismic surface waves<a class="headerlink" href="#sensor-placement-for-the-analysis-of-seismic-surface-waves" title="Permalink to this headline">¶</a></h1>
+<p>Sensor placement is in general a really hard problem. It is difficult to obtain optimal array geometries. However it is possible to find very good array geometries. Here is a Python implementation of the algorithm presented in</p>
+<ul class="simple">
+<li><p>Stefano Maranò, Donat Fäh, and Yue M. Lu, <strong>“Sensor Placement for the Analysis of Seismic Surface Waves: Sources of Error, Design Criterion and Array Design Algorithms”</strong>,  Geophys. J. Int. (2014) 197 (3): 1566–1581. <a class="reference external" href="http://academic.oup.com//gji/article/197/3/1566/652229/Sensor-placement-for-the-analysis-of-seismic?guestAccessKey=fbe9d23c-d168-4b3a-8946-118c73b482ad">Free access online</a>, <a class="reference external" href="https://doi.org/10.1093/gji/ggt489">doi:10.1093/gji/ggt489</a>.</p></li>
+</ul>
+<p>In the proposed work, the sensor placement problem is addressed as a <a class="reference external" href="https://en.wikipedia.org/wiki/Mixed_integer_program">mixed integer program</a>. The proposed array design technique was developed for usage in seismology. Two-dimensional arrays for other applications, including acoustic and radar, may also be designed.</p>
+<p>The algorithm was developed at the <a class="reference external" href="http://www.seismo.ethz.ch/">Swiss Seismological Service</a> of <a class="reference external" href="https://www.ethz.ch">ETH Zurich</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Python code is working but I am aware that some features are not polished. Please feel to contact me if there is anything you wish to discuss or improve <img class="math" src="_images/math/4b6097f9cf82b4a75798195afc1f5b4cb22aff42.png" alt="\textrm{wavedec&#64;gmail.com}"/>.</p>
+</div>
+</div>
+<div class="section" id="contents">
+<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="scientific.html">Scientist’s Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scientific.html#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scientific.html#important-quantities">Important quantities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scientific.html#relationship-with-likelihood-function">Relationship with likelihood function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scientific.html#proposed-cost-function">Proposed cost function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scientific.html#discretization-and-relaxation">Discretization and relaxation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scientific.html#how-to-choose-the-parameters">How to choose the parameters?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scientific.html#stretching">Stretching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scientific.html#bibliography">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#install-python-and-packages">Install Python and packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#install-a-solver">Install a solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#legacy-matlab-code-with-gurobi">Legacy MATLAB code with Gurobi</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User’s guide: SP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#commandline-options">Commandline options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#configuration-file">Configuration file</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#number-of-sensors">Number of sensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#kmin-and-kmax">Kmin and Kmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#possible-sensor-positions">Possible sensor positions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#additional-constraints">Additional constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#solver-options">Solver options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#optimization">Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#output-files">Output files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#plotting">Plotting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Usage Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#increasing-problem-difficulty">Increasing problem difficulty</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#kratio-2">Kratio=2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#kratio-3">Kratio=3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#kratio-4">Kratio=4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#kratio-5">Kratio=5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#kratio-9">Kratio=9</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#possible-positions-from-external-file">Possible positions from external file</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Sensor placement for the analysis of seismic surface waves</a></li>
+<li><a class="reference internal" href="#contents">Contents</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="scientific.html"
+                        title="next chapter">Scientist’s Documentation</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="scientific.html" title="Scientist’s Documentation"
+             >next</a> |</li>
+<li><a href="https://stefanomarano.github.io/SensorPlacement">Home</a> &#187; <a href="#">SensorPlacement  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+    <br>
+        &copy; Copyright 2020, Stefano Maranò.
+<!-- <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png"/></a>-->
+ This documentation is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ?
+"https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost +
+"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-4477781-2");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+  </body>
+</html>

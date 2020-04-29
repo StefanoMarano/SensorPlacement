@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Installation &#8212; SensorPlacement  documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User’s guide: SP" href="userguide.html" />
+    <link rel="prev" title="Scientist’s Documentation" href="scientific.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="userguide.html" title="User’s guide: SP"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="scientific.html" title="Scientist’s Documentation"
+             accesskey="P">previous</a> |</li>
+<li><a href="https://stefanomarano.github.io/SensorPlacement">Home</a> &#187; <a href="index.html">SensorPlacement  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>This page describes the steps necessary to install software required for the sensor placement algorithm.</p>
+<div class="section" id="install-python-and-packages">
+<h2>Install Python and packages<a class="headerlink" href="#install-python-and-packages" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Install Python 3 and the Python package installer by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
+</pre></div>
+</div>
+</li>
+<li><p>The following Python libraries are needed: <code class="docutils literal notranslate"><span class="pre">glob,</span> <span class="pre">os,</span> <span class="pre">errno,</span> <span class="pre">sys,</span> <span class="pre">yaml,</span> <span class="pre">time,</span> <span class="pre">csv,</span> <span class="pre">logging,</span> <span class="pre">argparse,</span> <span class="pre">numpy,</span> <span class="pre">scipy,</span> <span class="pre">matplotlib,</span> <span class="pre">pulp</span></code></p>
+<p>On Ubuntu many packages are installed with the default Python 3 installation. You may need to run install them manualy with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">&lt;</span><span class="n">package_name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="install-a-solver">
+<h2>Install a solver<a class="headerlink" href="#install-a-solver" title="Permalink to this headline">¶</a></h2>
+<p>The computationally intense job is performed by an external, thirt-party, solver. Different solvers can be used including <a class="reference external" href="http://www.gurobi.com/">Gurobi</a>, <a class="reference external" href="https://www.ibm.com/analytics/cplex-optimizer">CPLEX</a>, <a class="reference external" href="https://www.gnu.org/software/glpk/">GNU Linear Programming Toolkit</a>. Any solver supported by <a class="reference external" href="https://coin-or.github.io/pulp">PuLP</a> can be used.</p>
+<p>To install the GNU Linear Programming Toolkit type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">glpk</span><span class="o">-</span><span class="n">utils</span>
+</pre></div>
+</div>
+<p>For windows check <a class="reference external" href="http://winglpk.sourceforge.net/">GLPK for Windows</a>.</p>
+<p>For using a different solver, check the documentation of the specific solver.</p>
+</div>
+<div class="section" id="legacy-matlab-code-with-gurobi">
+<h2>Legacy MATLAB code with Gurobi<a class="headerlink" href="#legacy-matlab-code-with-gurobi" title="Permalink to this headline">¶</a></h2>
+<p>In the folder <code class="docutils literal notranslate"><span class="pre">src_matlab</span></code> MATLAB scripts for sensor placement are found.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Install MATLAB</p></li>
+<li><p>Install and configure the solver <a class="reference external" href="http://www.gurobi.com/">Gurobi</a>. You need to get a license to use Gurobi, the license is free for academic use.</p></li>
+<li><p>The code was tested with Gurobi 6.5.1 and Matlab 2013b.</p></li>
+</ul>
+</div></blockquote>
+<p>To run the code note the following:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The folder <code class="docutils literal notranslate"><span class="pre">./utils/</span></code> needs to be in the path searchable by MATLAB</p></li>
+<li><p>From the MATLAB prompt, configure Gurobi with the script <code class="docutils literal notranslate"><span class="pre">gurobi_setup.m</span></code></p></li>
+<li><p>Run the matlab script <code class="docutils literal notranslate"><span class="pre">SensorPlacement.m</span></code>. Changing some variables in the code allows to modify design parameters including number of sensors and spatial bandwidth. See comments in the file itself.</p></li>
+<li><p>Output is saved in the folder <code class="docutils literal notranslate"><span class="pre">./output/</span></code>. Each output MAT file can be loaded into matlab. The variable <cite>pos_sol</cite> contains the array layout found by the algorithm. The array layout can be plotted with <cite>plotArray_C(pos_sol)</cite></p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#install-python-and-packages">Install Python and packages</a></li>
+<li><a class="reference internal" href="#install-a-solver">Install a solver</a></li>
+<li><a class="reference internal" href="#legacy-matlab-code-with-gurobi">Legacy MATLAB code with Gurobi</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="scientific.html"
+                        title="previous chapter">Scientist’s Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="userguide.html"
+                        title="next chapter">User’s guide: SP</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="userguide.html" title="User’s guide: SP"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="scientific.html" title="Scientist’s Documentation"
+             >previous</a> |</li>
+<li><a href="https://stefanomarano.github.io/SensorPlacement">Home</a> &#187; <a href="index.html">SensorPlacement  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+    <br>
+        &copy; Copyright 2020, Stefano Maranò.
+<!-- <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png"/></a>-->
+ This documentation is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ?
+"https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost +
+"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-4477781-2");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+  </body>
+</html>

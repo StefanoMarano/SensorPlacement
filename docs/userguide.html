@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>User’s guide: SP &#8212; SensorPlacement  documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Usage Examples" href="examples.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="examples.html" title="Usage Examples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+<li><a href="https://stefanomarano.github.io/SensorPlacement">Home</a> &#187; <a href="index.html">SensorPlacement  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="user-s-guide-sp">
+<h1>User’s guide: SP<a class="headerlink" href="#user-s-guide-sp" title="Permalink to this headline">¶</a></h1>
+<p>A typical command to run the sensor placement algorithm looks as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ SP.py --config_file /path/to/config/file/MyConfig.yaml
+</pre></div>
+</div>
+<p>As a command line option we specify the path and name of a configuration file. This configuration file contains all the settings that you may wish to specify. The syntax of this configuration file is described below.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#commandline-options" id="id6">Commandline options</a></p></li>
+<li><p><a class="reference internal" href="#configuration-file" id="id7">Configuration file</a></p>
+<ul>
+<li><p><a class="reference internal" href="#number-of-sensors" id="id8">Number of sensors</a></p></li>
+<li><p><a class="reference internal" href="#kmin-and-kmax" id="id9">Kmin and Kmax</a></p></li>
+<li><p><a class="reference internal" href="#possible-sensor-positions" id="id10">Possible sensor positions</a></p></li>
+<li><p><a class="reference internal" href="#additional-constraints" id="id11">Additional constraints</a></p>
+<ul>
+<li><p><a class="reference internal" href="#enforcing-sensor-position" id="id12">Enforcing sensor position</a></p></li>
+<li><p><a class="reference internal" href="#constrain-moi" id="id13">Constrain MOI</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#solver-options" id="id14">Solver options</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#optimization" id="id15">Optimization</a></p></li>
+<li><p><a class="reference internal" href="#output-files" id="id16">Output files</a></p></li>
+<li><p><a class="reference internal" href="#plotting" id="id17">Plotting</a></p></li>
+</ul>
+</div>
+<div class="section" id="commandline-options">
+<h2><a class="toc-backref" href="#contents">Commandline options</a><a class="headerlink" href="#commandline-options" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="configuration-file">
+<span id="spconfigurationfile"></span><h2><a class="toc-backref" href="#contents">Configuration file</a><a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>The configuration file to specify important array design parameters. The configuration file is written in <a class="reference external" href="https://en.wikipedia.org/wiki/YAML">YAML</a>. The YAML syntax is simple and it is sufficient to look at the commented example below. More details about certain parameters are provided below.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#######################</span>
+<span class="c1"># Mandatory parameters</span>
+<span class="c1">#######################</span>
+<span class="nt">Nsensors</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">15</span>                 <span class="c1"># The number of sensors available</span>
+<span class="nt">Kmin</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1</span>                    <span class="c1"># minimization area, not resolution limits</span>
+<span class="nt">Kmax</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.4</span>
+
+<span class="c1">#######################</span>
+<span class="c1"># Optional parameters</span>
+<span class="c1">#######################</span>
+<span class="c1"># OUTPUT: OutputDir          # Folder where output files will be saved. Default is current folder &lt;.&gt;</span>
+<span class="c1"># MaximumAperture: 10        # Largest possible aperture of optimized array. Default is computed from Kmin</span>
+<span class="c1"># N: 200                     # Desired number of possible sensor positions. Default is &lt;&gt;</span>
+<span class="c1"># M: 80                      # Desired number of frequency samples. Default is &lt;&gt;</span>
+<span class="c1">### Possible sensor positions</span>
+<span class="c1"># Grid: &#39;rings_uniform&#39;      # Locations on circular rings. This is the default grid.</span>
+<span class="c1"># Grid: &#39;cartesian&#39;          # Locations on a Cartesian grid</span>
+<span class="c1"># Grid: &#39;hexagonal&#39;          # Locations on a Hexagonal grid</span>
+<span class="c1"># Grid: &#39;random&#39;             # Random locations</span>
+<span class="c1"># Grid: &#39;file&#39;               # Locations specified in an external file</span>
+<span class="c1"># GridFile: &#39;InputGrid.csv&#39;  # File with possible locations</span>
+
+<span class="c1"># EnforceSensor: [[0,0,1], [-2.4,3.4,1], [-2.4,3.4,0]] # Force the presence of a sensor at given positions. Default is uncostrained.</span>
+
+<span class="c1">#######################</span>
+<span class="c1"># Solver parameters</span>
+<span class="c1">#######################</span>
+<span class="nt">TimeLimit</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3600.0</span>            <span class="c1">#</span>
+</pre></div>
+</div>
+<p>The example configuration file shown above is available <a class="reference download internal" download="" href="_downloads/6d887c0124dd9ec6468cc50fc69a4432/ExampleConfig.yaml"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The configuration file is case sensitive.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The syntax of the configration files is not checked properly. Many mistakes will go unoticed eg: <code class="docutils literal notranslate"><span class="pre">K_min</span></code> or <code class="docutils literal notranslate"><span class="pre">kmin</span></code> instead of <code class="docutils literal notranslate"><span class="pre">Kmin</span></code>. Please check info printed at start up or the log file to make sure the configration file is read correctly.</p>
+</div>
+<div class="section" id="number-of-sensors">
+<h3><a class="toc-backref" href="#contents">Number of sensors</a><a class="headerlink" href="#number-of-sensors" title="Permalink to this headline">¶</a></h3>
+<p>The parameter <code class="docutils literal notranslate"><span class="pre">Nsensors</span></code> specifies the number of sensors of the array. It is denoted with <img class="math" src="_images/math/5e39e6f9d54fdbac1a3cad42723c4487d23b7598.png" alt="N_s"/> in the equations.</p>
+</div>
+<div class="section" id="kmin-and-kmax">
+<h3><a class="toc-backref" href="#contents">Kmin and Kmax</a><a class="headerlink" href="#kmin-and-kmax" title="Permalink to this headline">¶</a></h3>
+<p>The parameters <code class="docutils literal notranslate"><span class="pre">Kmin</span></code> and <code class="docutils literal notranslate"><span class="pre">Kmax</span></code> specify the region of the array response where the sidelobes are reduced. Their value must be chosen in agreement with the wavenumbers of the seismic wavefield (i.e., with the spatial bandwidth). A discussion on how to choose their value appropriately is found in <strong>TODO</strong></p>
+<p>Observe that a large <img class="math" src="_images/math/356a648e7ea9a9fa3e63e769e08a41c1d6dac876.png" alt="\kappa_{\textrm{ratio}}=\kappa_{\textrm{max}}/\kappa_{\textrm{min}}"/> makes the array design problem harder. See <strong>TODO</strong> for an example.</p>
+<p>Increasing <code class="docutils literal notranslate"><span class="pre">M</span></code> will increase the number of linear inequalities in the optimization problem.</p>
+<div class="align-center figure" id="id1" style="width: 60%">
+<a class="reference internal image-reference" href="_images/Optimized_ArrayResponse6.png"><img alt="Array response of an optimized array." src="_images/Optimized_ArrayResponse6.png" style="width: 80%;" /></a>
+<p class="caption"><span class="caption-text">Array response of an optimized array. The <code class="docutils literal notranslate"><span class="pre">M</span></code> blue dots depict the points used in the computation. The annulus defined by <code class="docutils literal notranslate"><span class="pre">Kmin</span></code> and <code class="docutils literal notranslate"><span class="pre">Kmax</span></code> is depicted.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="possible-sensor-positions">
+<h3><a class="toc-backref" href="#contents">Possible sensor positions</a><a class="headerlink" href="#possible-sensor-positions" title="Permalink to this headline">¶</a></h3>
+<p>The sensor placement algorithm finds good positions of the <img class="math" src="_images/math/5e39e6f9d54fdbac1a3cad42723c4487d23b7598.png" alt="N_s"/> among <img class="math" src="_images/math/3bfb3a64189a14b2704f4610827762d5e3145114.png" alt="N"/> possible sensor positions.</p>
+<p>The choice of the geometry of the possible sensor positions and the number of possible sensor positions affect the results. Some choices may be more suitable than others. Some choices may make the optimization problem really hard and the algorithm will not find a good array.</p>
+<p>The parameter <code class="docutils literal notranslate"><span class="pre">Grid</span></code> allows us to choose among different possible arrangements of the possible sensor positions. The parameter <code class="docutils literal notranslate"><span class="pre">N</span></code> specifies the number of the possible sensor positions. The parameter <code class="docutils literal notranslate"><span class="pre">MaximumAperture</span></code> specifies the maximum array aperture in meters.</p>
+<p>Increasing <code class="docutils literal notranslate"><span class="pre">N</span></code> will make the possible sensor positions more dense. But the optimization problem a lot harder.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It is possible to load from file an arbitrary set of possible sensor positions. This is especially useful in presence of physical obstructions. Set <code class="docutils literal notranslate"><span class="pre">Grid:</span> <span class="pre">'file'</span></code> and <code class="docutils literal notranslate"><span class="pre">GridFile:</span> <span class="pre">'CustomGrid.csv'</span></code>.</p>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 47%" />
+<col style="width: 53%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="align-center figure align-default" id="id2" style="width: 90%">
+<a class="reference internal image-reference" href="_images/RingsUniform.png"><img alt="A circular arrangment" src="_images/RingsUniform.png" style="width: 80%;" /></a>
+<p class="caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">Grid:</span> <span class="pre">'rings_uniform'</span></code>.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="align-center figure align-default" id="id3" style="width: 90%">
+<a class="reference internal image-reference" href="_images/Cartesian.png"><img alt="A Cartesian grid" src="_images/Cartesian.png" style="width: 80%;" /></a>
+<p class="caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">Grid:</span> <span class="pre">'cartesian'</span></code>.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="align-center figure align-default" id="id4" style="width: 90%">
+<a class="reference internal image-reference" href="_images/Hexagonal.png"><img alt="A hexagonal grid" src="_images/Hexagonal.png" style="width: 80%;" /></a>
+<p class="caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">Grid:</span> <span class="pre">'hexagonal'</span></code>.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="align-center figure align-default" id="id5" style="width: 90%">
+<a class="reference internal image-reference" href="_images/Random.png"><img alt="A Cartesian grid" src="_images/Random.png" style="width: 80%;" /></a>
+<p class="caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">Grid:</span> <span class="pre">'random'</span></code>.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="additional-constraints">
+<h3><a class="toc-backref" href="#contents">Additional constraints</a><a class="headerlink" href="#additional-constraints" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="enforcing-sensor-position">
+<h4><a class="toc-backref" href="#contents">Enforcing sensor position</a><a class="headerlink" href="#enforcing-sensor-position" title="Permalink to this headline">¶</a></h4>
+<p>It is possible to enforce the presence or the absence of a sensor at a specific position. Use the optional parameter <code class="docutils literal notranslate"><span class="pre">EnforceSensor</span></code>. The syntax is <code class="docutils literal notranslate"><span class="pre">EnforceSensor:</span> <span class="pre">[[x1,y1,0/1],</span> <span class="pre">[x2,y2,0/1],</span> <span class="pre">[x3,y3,0/1],...]</span></code>.</p>
+<p>The enforced position must be within the possible sensor positions. If not, the closest sensor position will be chosen.</p>
+<p>For example, we enforce the presence of three sensors at positions <img class="math" src="_images/math/e98a936bbe51fe65c29ae14728c810937064ae10.png" alt="\mathbf{p}_1=(0,0)"/>, <img class="math" src="_images/math/ad162419613aa21f08e13af5d3263d3ca9745412.png" alt="\mathbf{p}_2=(-1,1)"/>, <img class="math" src="_images/math/f7ddc7ec889d324a472fa5c0bd00dfe938f4848e.png" alt="\mathbf{p}_3=(4.5,-2)"/></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">EnforceSensor </span><span class="p">:</span> <span class="p p-Indicator">[[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">],</span> <span class="p p-Indicator">[</span><span class="nv">-1</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">],</span> <span class="p p-Indicator">[</span><span class="nv">4.5</span><span class="p p-Indicator">,</span><span class="nv">-2</span><span class="p p-Indicator">,</span><span class="nv">1</span><span class="p p-Indicator">]]</span>
+</pre></div>
+</div>
+<p>To prevent the algorithm placing a sensor at the origin we use</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">EnforceSensor </span><span class="p">:</span> <span class="p p-Indicator">[[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]]</span>
+</pre></div>
+</div>
+<p>Observe the double <code class="docutils literal notranslate"><span class="pre">[[</span> <span class="pre">]]</span></code> even when specifying a constraint on a single sensor position.</p>
+</div>
+<div class="section" id="constrain-moi">
+<h4><a class="toc-backref" href="#contents">Constrain MOI</a><a class="headerlink" href="#constrain-moi" title="Permalink to this headline">¶</a></h4>
+<p><strong>TODO</strong> Enforce MOI</p>
+</div>
+</div>
+<div class="section" id="solver-options">
+<h3><a class="toc-backref" href="#contents">Solver options</a><a class="headerlink" href="#solver-options" title="Permalink to this headline">¶</a></h3>
+<p>The search for the optimal array may last a very long time. It is wise to terminate the optimization after a certain amount of time. The best array found in the given time is saved. Use <code class="docutils literal notranslate"><span class="pre">TimeLimit:</span> <span class="pre">3600</span></code> to set a maximum time in seconds.</p>
+</div>
+</div>
+<div class="section" id="optimization">
+<h2><a class="toc-backref" href="#contents">Optimization</a><a class="headerlink" href="#optimization" title="Permalink to this headline">¶</a></h2>
+<p>After reading the configuration file the software will start solving the opzimization problem and seek for an optimized array.</p>
+<p>The optimization may run for a very long time if you allow to do so.</p>
+</div>
+<div class="section" id="output-files">
+<h2><a class="toc-backref" href="#contents">Output files</a><a class="headerlink" href="#output-files" title="Permalink to this headline">¶</a></h2>
+<p>The output is saved to CSV files in the directory specified in the configuration file by <code class="docutils literal notranslate"><span class="pre">OUTPUT</span></code>. The output files can be opened with a spreadsheet or with a simple text editor.</p>
+<p>Comment lines begin with <code class="docutils literal notranslate"><span class="pre">#</span></code>. On each row columns are separated by a tabulation character <code class="docutils literal notranslate"><span class="pre">\t</span></code>.</p>
+<p>Each column of the CSV file is described in the following table.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>File name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Optimized_ArrayLayout.csv</p></td>
+<td><div class="line-block">
+<div class="line">Contains the coordinates of the optimized array</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>PossiblePositions.csv</p></td>
+<td><div class="line-block">
+<div class="line">Contains the coordinates of the possible positions used.</div>
+<div class="line">This may be edited and reused as input in another optimization.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>Optimized_Info.yaml</p></td>
+<td><div class="line-block">
+<div class="line">A YAMl file with some information about the solution.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>SP.log</p></td>
+<td><div class="line-block">
+<div class="line">Main log file.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>SP_gurobi.log</p></td>
+<td><div class="line-block">
+<div class="line">Log file with details about the numerical optimization.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>plots/</p></td>
+<td><div class="line-block">
+<div class="line">Folder with some plots.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="plotting">
+<h2><a class="toc-backref" href="#contents">Plotting</a><a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h2>
+<p>Move to the folder where the output files are saved and use <code class="docutils literal notranslate"><span class="pre">spPlot.py</span></code> to plot array layout and array response</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ spPlot.py
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">User’s guide: SP</a><ul>
+<li><a class="reference internal" href="#commandline-options">Commandline options</a></li>
+<li><a class="reference internal" href="#configuration-file">Configuration file</a><ul>
+<li><a class="reference internal" href="#number-of-sensors">Number of sensors</a></li>
+<li><a class="reference internal" href="#kmin-and-kmax">Kmin and Kmax</a></li>
+<li><a class="reference internal" href="#possible-sensor-positions">Possible sensor positions</a></li>
+<li><a class="reference internal" href="#additional-constraints">Additional constraints</a><ul>
+<li><a class="reference internal" href="#enforcing-sensor-position">Enforcing sensor position</a></li>
+<li><a class="reference internal" href="#constrain-moi">Constrain MOI</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#solver-options">Solver options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#optimization">Optimization</a></li>
+<li><a class="reference internal" href="#output-files">Output files</a></li>
+<li><a class="reference internal" href="#plotting">Plotting</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">Usage Examples</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="examples.html" title="Usage Examples"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+<li><a href="https://stefanomarano.github.io/SensorPlacement">Home</a> &#187; <a href="index.html">SensorPlacement  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+    <br>
+        &copy; Copyright 2020, Stefano Maranò.
+<!-- <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png"/></a>-->
+ This documentation is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ?
+"https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost +
+"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-4477781-2");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+  </body>
+</html>

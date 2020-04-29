@@ -1,0 +1,6 @@
+
+Gurobi 7.0.2 (linux64, Python) logging started Mon May 15 18:35:02 2017
+
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+Changed value of parameter TimeLimit to 600.0
+   Prev: 1e+100  Min: 0.0  Max: 1e+100  Default: 1e+100

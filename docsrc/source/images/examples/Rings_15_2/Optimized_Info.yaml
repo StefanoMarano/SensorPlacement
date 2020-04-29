@@ -1,0 +1,8 @@
+Grid: rings_uniform
+Kmax: 0.2
+Kmin: 0.1
+M: 89
+MaximumAperture: 11.999999999999998
+N: 205
+Nsensors: 15
+TimeLimit: 600

@@ -1,0 +1,15 @@
+2017-05-15 19:30:20 INFO     
+2017-05-15 19:30:20 INFO     Sensor Placement for seismic surface waves
+2017-05-15 19:30:20 INFO     © 2017 ETH Zurich, Swiss Seismological Service
+2017-05-15 19:30:20 INFO     
+2017-05-15 19:30:20 INFO     	With configuration file
+2017-05-15 19:30:20 INFO     		/home/marra/SensorPlacement/examples/Rings_15_9/config.yaml
+2017-05-15 19:30:20 INFO     	Output will be stored in
+2017-05-15 19:30:20 INFO     		/home/marra/SensorPlacement/examples/Rings_15_9
+2017-05-15 19:30:20 INFO     	Placing 15 sensors
+2017-05-15 19:30:20 INFO     	With 205 possible sensor positions
+2017-05-15 19:30:20 INFO     	Maximum aperture 1.20e+01  [m]
+2017-05-15 19:30:20 INFO     	Kmin=1.00e-01 Kmax=9.00e-01 [1/m]
+2017-05-15 19:30:20 INFO     Running gurobi model...
+2017-05-15 19:30:20 INFO     	See gurobi log file for details concerning optimization
+2017-05-15 19:40:21 INFO     Optimization terminated.

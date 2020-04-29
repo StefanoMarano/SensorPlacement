@@ -1,0 +1,29 @@
+#######################
+# Mandatory parameters
+#######################
+Nsensors: 15                 # The number of sensors available
+Kmin: 0.1                    # minimization area, not resolution limits
+Kmax: 0.4
+
+#######################
+# Optional parameters
+#######################
+# OUTPUT: OutputDir          # Folder where output files will be saved. Default is current folder <.>
+# MaximumAperture: 10        # Largest possible aperture of optimized array. Default is computed from Kmin
+# N: 200                     # Desired number of possible sensor positions. Default is <>
+# M: 80                      # Desired number of frequency samples. Default is <>
+### Possible sensor positions
+# Grid: 'rings_uniform'      # Locations on circular rings. This is the default grid.
+# Grid: 'cartesian'          # Locations on a Cartesian grid
+# Grid: 'hexagonal'          # Locations on a Hexagonal grid
+# Grid: 'random'             # Random locations
+# Grid: 'file'               # Locations specified in an external file
+# GridFile: 'InputGrid.csv'  # File with possible locations
+
+# EnforceSensor: [[0,0,1], [-2.4,3.4,1], [-2.4,3.4,0]] # Force the presence of a sensor at given positions. Default is uncostrained.
+
+#######################
+# Solver parameters
+#######################
+TimeLimit: 3600.0            #
+

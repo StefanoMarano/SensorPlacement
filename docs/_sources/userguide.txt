@@ -1,0 +1,177 @@
+=====================
+User's guide: SP
+=====================
+
+A typical command to run the sensor placement algorithm looks as follows:
+
+.. code-block:: bash
+
+  $ SP.py --config_file /path/to/config/file/MyConfig.yaml
+
+As a command line option we specify the path and name of a configuration file. This configuration file contains all the settings that you may wish to specify. The syntax of this configuration file is described below.
+
+.. contents::
+   :local:
+   :backlinks: top
+
+Commandline options
+###################
+
+
+.. _SPConfigurationFile:
+
+Configuration file
+##################
+
+The configuration file to specify important array design parameters. The configuration file is written in `YAML <https://en.wikipedia.org/wiki/YAML>`_. The YAML syntax is simple and it is sufficient to look at the commented example below. More details about certain parameters are provided below.
+
+
+.. literalinclude:: AdditionalFiles/ExampleConfig.yaml
+   :language: yaml
+
+The example configuration file shown above is available :download:`here <AdditionalFiles/ExampleConfig.yaml>`.
+
+.. warning:: The configuration file is case sensitive.
+
+.. warning:: The syntax of the configration files is not checked properly. Many mistakes will go unoticed eg: ``K_min`` or ``kmin`` instead of ``Kmin``. Please check info printed at start up or the log file to make sure the configration file is read correctly.
+
+Number of sensors
+-----------------
+
+The parameter ``Nsensors`` specifies the number of sensors of the array. It is denoted with :math:`N_s` in the equations.
+
+Kmin and Kmax
+-------------
+
+The parameters ``Kmin`` and ``Kmax`` specify the region of the array response where the sidelobes are reduced. Their value must be chosen in agreement with the wavenumbers of the seismic wavefield (i.e., with the spatial bandwidth). A discussion on how to choose their value appropriately is found in **TODO**
+
+Observe that a large :math:`\kappa_{\textrm{ratio}}=\kappa_{\textrm{max}}/\kappa_{\textrm{min}}` makes the array design problem harder. See **TODO** for an example.
+
+Increasing ``M`` will increase the number of linear inequalities in the optimization problem.
+
+.. figure:: images/Optimized_ArrayResponse.png
+  :alt: Array response of an optimized array.
+  :align: center
+  :width: 80%
+  :figwidth: 60%
+  :figclass: align-center
+
+  Array response of an optimized array. The ``M`` blue dots depict the points used in the computation. The annulus defined by ``Kmin`` and ``Kmax`` is depicted.
+
+
+Possible sensor positions
+-------------------------
+
+The sensor placement algorithm finds good positions of the :math:`N_s` among :math:`N` possible sensor positions.
+
+The choice of the geometry of the possible sensor positions and the number of possible sensor positions affect the results. Some choices may be more suitable than others. Some choices may make the optimization problem really hard and the algorithm will not find a good array.
+
+The parameter ``Grid`` allows us to choose among different possible arrangements of the possible sensor positions. The parameter ``N`` specifies the number of the possible sensor positions. The parameter ``MaximumAperture`` specifies the maximum array aperture in meters.
+
+Increasing ``N`` will make the possible sensor positions more dense. But the optimization problem a lot harder. 
+
+
+.. TIP:: It is possible to load from file an arbitrary set of possible sensor positions. This is especially useful in presence of physical obstructions. Set ``Grid: file`` and ``GridFile: CustomGrid.csv``.
+
+
++---------------------------------------------------------------+----------------------------------------------------------------------+
+|                                                               |                                                                      |
+| .. figure:: images/grids/RingsUniform.png                     | .. figure:: images/grids/Cartesian.png                               |
+|   :alt: A circular arrangment                                 |   :alt: A Cartesian grid                                             |
+|   :width: 80%                                                 |   :width: 80%                                                        |
+|   :figwidth: 90%                                              |   :figwidth: 90%                                                     |
+|   :figclass: align-center                                     |   :figclass: align-center                                            |
+|                                                               |                                                                      |
+|   ``Grid: rings_uniform``.                                    |   ``Grid: cartesian``.                                               |
++---------------------------------------------------------------+----------------------------------------------------------------------+
+|                                                               |                                                                      |
+| .. figure:: images/grids/Hexagonal.png                        | .. figure:: images/grids/Random.png                                  |
+|   :alt: A hexagonal grid                                      |   :alt: A Cartesian grid                                             |
+|   :width: 80%                                                 |   :width: 80%                                                        |
+|   :figwidth: 90%                                              |   :figwidth: 90%                                                     |
+|   :figclass: align-center                                     |   :figclass: align-center                                            |
+|                                                               |                                                                      |
+|   ``Grid: hexagonal``.                                        |   ``Grid: random``.                                                  |
++---------------------------------------------------------------+----------------------------------------------------------------------+
+
+
+Additional constraints
+----------------------
+
+Enforcing sensor position
+"""""""""""""""""""""""""
+
+It is possible to enforce the presence or the absence of a sensor at a specific position. Use the optional parameter ``EnforceSensor``. The syntax is ``EnforceSensor: [[x1,y1,0/1], [x2,y2,0/1], [x3,y3,0/1],...]``.
+
+The enforced position must be within the possible sensor positions. If not, the closest sensor position will be chosen.
+
+For example, we enforce the presence of three sensors at positions :math:`\mathbf{p}_1=(0,0)`, :math:`\mathbf{p}_2=(-1,1)`, :math:`\mathbf{p}_3=(4.5,-2)`
+
+.. code-block:: yaml
+
+  EnforceSensor : [[0,0,1], [-1,1,1], [4.5,-2,1]]
+
+To prevent the algorithm placing a sensor at the origin we use
+
+.. code-block:: yaml
+
+  EnforceSensor : [[0,0,0]]
+
+Observe the double ``[[ ]]`` even when specifying a constraint on a single sensor position.
+
+
+Constrain MOI
+"""""""""""""
+
+**TODO** Enforce MOI
+
+Solver options
+--------------
+
+The search for the optimal array may last a very long time. It is wise to terminate the optimization after a certain amount of time. The best array found in the given time is saved. Use ``TimeLimit: 3600`` to set a maximum time in seconds.
+
+Optimization
+############
+
+After reading the configuration file the software will start solving the opzimization problem and seek for an optimized array.
+
+The optimization may run for a very long time if you allow to do so.
+
+Output files
+############
+
+The output is saved to CSV files in the directory specified in the configuration file by ``OUTPUT``. The output files can be opened with a spreadsheet or with a simple text editor.
+
+Comment lines begin with ``#``. On each row columns are separated by a tabulation character ``\t``.
+
+Each column of the CSV file is described in the following table.
+
+==============================   =========================================================================
+File name                        Description
+==============================   =========================================================================
+Optimized_ArrayLayout.csv        | Contains the coordinates of the optimized array
+
+PossiblePositions.csv            | Contains the coordinates of the possible positions used.
+                                 | This may be edited and reused as input in another optimization.
+
+Optimized_Info.yaml              | A YAMl file with some information about the solution.
+
+SP.log                           | Main log file.
+
+SP_gurobi.log                    | Log file with details about the numerical optimization.
+
+plots/                           | Folder with some plots.
+
+==============================   =========================================================================
+
+
+
+Plotting
+########
+
+Move to the folder where the output files are saved and use ``spPlot.py`` to plot array layout and array response
+
+.. code-block:: bash
+
+  $ spPlot.py
+

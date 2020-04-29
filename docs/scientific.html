@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Scientist’s Documentation &#8212; SensorPlacement  documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Sensor placement for the analysis of seismic surface waves" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Sensor placement for the analysis of seismic surface waves"
+             accesskey="P">previous</a> |</li>
+<li><a href="https://stefanomarano.github.io/SensorPlacement">Home</a> &#187; <a href="index.html">SensorPlacement  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="scientist-s-documentation">
+<h1>Scientist’s Documentation<a class="headerlink" href="#scientist-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>This pages describes the motivation and the approach behind the sensor placement algorithm. More details are found in the original publication:</p>
+<ul class="simple">
+<li><p>Stefano Maranò, Donat Fäh, and Yue M. Lu, <strong>“Sensor Placement for the Analysis of Seismic Surface Waves: Sources of Error, Design Criterion and Array Design Algorithms”</strong>,  Geophys. J. Int. (2014) 197 (3): 1566–1581. <a class="reference external" href="http://academic.oup.com//gji/article/197/3/1566/652229/Sensor-placement-for-the-analysis-of-seismic?guestAccessKey=fbe9d23c-d168-4b3a-8946-118c73b482ad">Free access online</a>, <a class="reference external" href="https://doi.org/10.1093/gji/ggt489">doi:10.1093/gji/ggt489</a>.</p></li>
+</ul>
+<p>The proposed sensor placement algorithm was developed to design planar arrays in seismology. Other possible domains of application include acoustic and radar. The most important assumption behind this work is that the wave should cross the array with a pklane wavefront.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#motivation" id="id8">Motivation</a></p></li>
+<li><p><a class="reference internal" href="#important-quantities" id="id9">Important quantities</a></p></li>
+<li><p><a class="reference internal" href="#relationship-with-likelihood-function" id="id10">Relationship with likelihood function</a></p></li>
+<li><p><a class="reference internal" href="#proposed-cost-function" id="id11">Proposed cost function</a></p></li>
+<li><p><a class="reference internal" href="#discretization-and-relaxation" id="id12">Discretization and relaxation</a></p></li>
+<li><p><a class="reference internal" href="#how-to-choose-the-parameters" id="id13">How to choose the parameters?</a></p></li>
+<li><p><a class="reference internal" href="#stretching" id="id14">Stretching</a></p></li>
+<li><p><a class="reference internal" href="#bibliography" id="id15">Bibliography</a></p></li>
+</ul>
+</div>
+<div class="section" id="motivation">
+<h2><a class="toc-backref" href="#contents">Motivation</a><a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>The presence of outliers can severely downgrade the estimation performance. Outliers are related to the presence of sidelobes in the array response.</p>
+<p>In the image below, we evaluate the performance of a maximum likelihood estimator at three different signal-to-noise ratio (SNR) levels. The wavevector of a wave with plane wavefront is estimated using the <a class="reference external" href="http://mercalli.ethz.ch/~marra/WaveDec/">WaveDec</a> software. The red cross pinpoint the location of the true wavevector. The black crosses pinpoint the estimated wavevector for different noise realizations.</p>
+<p>At low SNR, the wavenumber estimates appears to be distributed randomly. The signal is dominated by the strong noise and the estimates carry no information about the true wavevector.</p>
+<p>At intermediate SNR, many estimates cluster near the true wavevector. Many other estimates are clustered away from the true wavevector. They are clustered near the sidelobe of the expected loglikelihood function (shown in the background). This large errors are called gross errors or outliers.</p>
+<p>At high SNR, all the estimates are clustered near the true wavevector. Their variance is well described by the Cramér–Rao bound.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="align-center figure align-default" id="id2" style="width: 90%">
+<a class="reference internal image-reference" href="_images/ThreeRegions.png"><img alt="Array layout" src="_images/ThreeRegions.png" style="width: 100%;" /></a>
+<p class="caption"><span class="caption-text">Wavenumber estimate at low signal-to-noise ratio (SNR), at intermediate
+SNR and at high SNR.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="important-quantities">
+<h2><a class="toc-backref" href="#contents">Important quantities</a><a class="headerlink" href="#important-quantities" title="Permalink to this headline">¶</a></h2>
+<p>Given <img class="math" src="_images/math/5e39e6f9d54fdbac1a3cad42723c4487d23b7598.png" alt="N_s"/> sensor positions <img class="math" src="_images/math/e3c374fa3c722533a0eb0561308cdfa521f56de9.png" alt="\mathbf{p}_n\in\mathbb{R}^2"/> we define the sampilng pattern as the sum of <img class="math" src="_images/math/5e39e6f9d54fdbac1a3cad42723c4487d23b7598.png" alt="N_s"/> Dirac delta centered at the sensor positions</p>
+<div class="math" id="equation-eqsamplingpattern">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-eqsamplingpattern" title="Permalink to this equation">¶</a></span><img src="_images/math/5e00fb0e3151bf646e54c2d32a21db3c64020d40.png" alt="\begin{eqnarray*}
+   h(\mathbf{p})=\sum_{n=1}^{N_s}\delta(\mathbf{p}-\mathbf{p}_{n})\,.
+\end{eqnarray*}"/></p>
+</div><p>Then we consider the two-dimensional Fourier transform of the sampling pattern. Let <img class="math" src="_images/math/4e21002e612b18b79b5c70db20d8fc7e86468be1.png" alt="\boldsymbol{\kappa}=\left(\kappa_x,\kappa_y\right)^T"/> denote the wavevector (spatial frequency). The Fourier transform is</p>
+<div class="math" id="equation-eqarrayresponse">
+<p><span class="eqno">(2)<a class="headerlink" href="#equation-eqarrayresponse" title="Permalink to this equation">¶</a></span><img src="_images/math/ff148fd21d453a6cc0e17bab163801768f23d992.png" alt="\begin{eqnarray*}
+   H(\boldsymbol{\kappa}) &amp; = &amp; \mathcal{F}\left\{ h(\mathbf{p}))\right\} \\
+                                           &amp; = &amp; \int_{\mathbb{R}^2} \sum_{n=1}^{N_s}\delta(\mathbf{p}-\mathbf{p}_{n}) \textrm{exp}\left(-i \boldsymbol{\kappa}^T \mathbf{p} \right) \,\textrm{d}\mathbf{p} \\
+                                           &amp; = &amp; \sum_{n=1}^{N_s} \textrm{exp}\left( -i \boldsymbol{\kappa}^T \mathbf{p}_n \right)\,.
+\end{eqnarray*}"/></p>
+</div><p>The squared complex modulus of the Fourier transform, <img class="math" src="_images/math/acea4127ddcfe3780b2463194708b7d937058064.png" alt="\left|H(\boldsymbol{\kappa})\right|^{2}"/>, is known as array response.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="align-center figure align-default" id="id3" style="width: 60%">
+<a class="reference internal image-reference" href="_images/SamplingPattern.png"><img alt="Sampling pattern" src="_images/SamplingPattern.png" style="width: 90%;" /></a>
+<p class="caption"><span class="caption-text">Sampling pattern <img class="math" src="_images/math/5ed6789a5f4904bd1c206551f5b832495f188c37.png" alt="h(\mathbf{p})"/> of a 5 sensor array.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="align-center figure align-default" id="id4" style="width: 60%">
+<a class="reference internal image-reference" href="_images/ArrayResponse.png"><img alt="Array response" src="_images/ArrayResponse.png" style="width: 90%;" /></a>
+<p class="caption"><span class="caption-text">The array response
+<img class="math" src="_images/math/acea4127ddcfe3780b2463194708b7d937058064.png" alt="\left|H(\boldsymbol{\kappa})\right|^{2}"/>.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="relationship-with-likelihood-function">
+<h2><a class="toc-backref" href="#contents">Relationship with likelihood function</a><a class="headerlink" href="#relationship-with-likelihood-function" title="Permalink to this headline">¶</a></h2>
+<p>Love and Rayleigh likelihood functions are related to the array response. It can be shown that the likelihood function of a Love wave <img class="math" src="_images/math/8fbee976e49e048a6b7005bf625a67b275a893a6.png" alt="\ln(p_{\mathbf{Y}}(\mathbf{y}|\boldsymbol{\kappa}))"/> is realted to the array response as</p>
+<div class="math" id="equation-lovewave">
+<p><span class="eqno">(3)<a class="headerlink" href="#equation-lovewave" title="Permalink to this equation">¶</a></span><img src="_images/math/e6c6549b5a424a2b11317beadedf2fe7b088096a.png" alt="\begin{eqnarray*}
+    \mathop{\mathbb{E}} \left\{ \ln\left(p_{\mathbf{Y}}\left(\mathbf{y}|\boldsymbol{\kappa}\right)\right)\right\} \propto f_{\textrm{L}}(\psi,\breve{\psi})\left|H(\boldsymbol{\kappa}-\breve{\boldsymbol{\kappa}})\right|^{2}\,,
+\end{eqnarray*}"/></p>
+</div><p>where <img class="math" src="_images/math/e14534afa42c737510197de66d150afa94ba100e.png" alt="\mathop{\mathbb{E}}"/> denotes the expectation operator, <img class="math" src="_images/math/2e453db420ba08debcb3a502350cce8801147ee1.png" alt="p_{\mathbf{Y}}\left(\mathbf{y}|\boldsymbol{\kappa}\right)"/> is the likelihood function. True wave parameters are detoted with the superscript <img class="math" src="_images/math/1f558926b8f44287936cd8f860a619fa32175ccb.png" alt="\breve{}"/>.</p>
+<p>Similarly, for Rayleigh waves, it can be shown that</p>
+<div class="math" id="equation-rayleighwave">
+<p><span class="eqno">(4)<a class="headerlink" href="#equation-rayleighwave" title="Permalink to this equation">¶</a></span><img src="_images/math/8b9a6d7b9f6413ebf603c174a1d64c83608ae52d.png" alt="\begin{eqnarray*}
+\mathop{\mathbb{E}} \left\{ \ln\left(p_{\mathbf{Y}}\left(\mathbf{y} |\boldsymbol{\kappa},\xi\right)\right)\right\} \propto f_{\textrm{R}}(\psi,\breve{\psi},\xi,\breve{\xi})\left|H(\boldsymbol{\kappa}-\breve{\boldsymbol{\kappa}})\right|^{2}\,.
+\end{eqnarray*}"/></p>
+</div><p>The functions <img class="math" src="_images/math/b623528bebaf0428b33585f7ea8c3a9357858080.png" alt="f_{\textrm{L}}"/> and <img class="math" src="_images/math/b623528bebaf0428b33585f7ea8c3a9357858080.png" alt="f_{\textrm{L}}"/> multiply the array response changing its shape. They reflect the contribution to the likelihood function of the three-component sensors. It is important to stress that these two functions do not depend on the sensor positions. For an acoustic wave measured at a microphone array (scalar sensor), these factor would disappear.</p>
+<p>The following pictures show graphically the relationship between likelihood function and array response. Observe the shift corresponding to the true wavevector <img class="math" src="_images/math/065cd8e2df67f1797978411c5dbfedb1513fa127.png" alt="\breve{\boldsymbol{\kappa}}"/> and compare with the array response depicted in the previous section.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="align-center figure align-default" id="id5" style="width: 60%">
+<a class="reference internal image-reference" href="_images/LL_Love.png"><img alt="Love wave likelihood" src="_images/LL_Love.png" style="width: 90%;" /></a>
+<p class="caption"><span class="caption-text">Likelihood function for a Love wave. The true wavenumber
+is <img class="math" src="_images/math/065cd8e2df67f1797978411c5dbfedb1513fa127.png" alt="\breve{\boldsymbol{\kappa}}"/>.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+<td><div class="align-center figure align-default" id="id6" style="width: 60%">
+<a class="reference internal image-reference" href="_images/LL_Rayleigh.png"><img alt="Rayleigh wave likelihood" src="_images/LL_Rayleigh.png" style="width: 90%;" /></a>
+<p class="caption"><span class="caption-text">Likelihood function of a Rayleigh wave.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>More details concerning the relationship between likelihood function and array response are given in <a class="reference internal" href="#marano-et-al-2014b" id="id1"><span>[Maranò_et_al_2014b]</span></a>.</p>
+</div>
+<div class="section" id="proposed-cost-function">
+<h2><a class="toc-backref" href="#contents">Proposed cost function</a><a class="headerlink" href="#proposed-cost-function" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-right" id="id7" style="width: 30%">
+<a class="reference internal image-reference" href="_images/MinimizationRegion.png"><img alt="Array response" src="_images/MinimizationRegion.png" style="width: 80%;" /></a>
+<p class="caption"><span class="caption-text">The region <img class="math" src="_images/math/32a3d6ececc1b56ec736c5ed3d7a39307006e29c.png" alt="\mathcal{K}"/> on the wavenumber (spatial frequency) plane is defined by <img class="math" src="_images/math/4b6fdd556c03d8c862d4851eeb4718ce4a34089f.png" alt="\kappa_{\textrm{min}}"/> and <img class="math" src="_images/math/3950497c690d41e5ba0f5620ce354c9e211a7986.png" alt="\kappa_{\textrm{max}}"/>.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<p>Our aim is to reduce the sidelobes of the array response in a certain spatial badwidth of interest. The region of interest is the <a class="reference external" href="https://en.wikipedia.org/wiki/Annulus_(mathematics)">annulus</a> <img class="math" src="_images/math/32a3d6ececc1b56ec736c5ed3d7a39307006e29c.png" alt="\mathcal{K}"/> defined by a minimum and maximum wavenumber, <img class="math" src="_images/math/4b6fdd556c03d8c862d4851eeb4718ce4a34089f.png" alt="\kappa_{\textrm{min}}"/> and <img class="math" src="_images/math/3950497c690d41e5ba0f5620ce354c9e211a7986.png" alt="\kappa_{\textrm{max}}"/>, respectively.</p>
+<p>We formulate the following optimization problem, minimizing the largest sidelobe in the region <img class="math" src="_images/math/32a3d6ececc1b56ec736c5ed3d7a39307006e29c.png" alt="\mathcal{K}"/>:</p>
+<div class="math" id="equation-eqcontinuosminimization">
+<p><span class="eqno">(5)<a class="headerlink" href="#equation-eqcontinuosminimization" title="Permalink to this equation">¶</a></span><img src="_images/math/b986842e5d7809f22087045f7dc6f14db8ee10c8.png" alt="\begin{eqnarray*}
+    \min_{\mathbf{p}_{1},\mathbf{p}_{2},\ldots,\mathbf{p}_{N_s}}     \max_{\boldsymbol{\kappa}\in\mathcal{K}}\left|H(\boldsymbol{\kappa},\mathbf{p}_{1},\mathbf{p}_{2},\ldots,\mathbf{p}_{N_s})\right| \\
+     \mathcal{K}=\{\boldsymbol{\kappa}:\kappa_{\textrm{min}}\leq\left\Vert \boldsymbol{\kappa}\right\Vert _{2}\leq2\kappa_{\textrm{max}}\}\,.
+ \end{eqnarray*}"/></p>
+</div><p>This problem is very difficult to optimize. In fact, the minimization variables <img class="math" src="_images/math/f81ba37c6cb97380637aa7e34a48e58832f3f9c1.png" alt="\mathbf{p}_{1},\mathbf{p}_{2},\ldots,\mathbf{p}_{N_s}"/> appear in the argument of complex exponentials, cf. Eq. <a class="reference internal" href="#equation-eqarrayresponse">(2)</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The values <img class="math" src="_images/math/4b6fdd556c03d8c862d4851eeb4718ce4a34089f.png" alt="\kappa_{\textrm{min}}"/> and <img class="math" src="_images/math/3950497c690d41e5ba0f5620ce354c9e211a7986.png" alt="\kappa_{\textrm{max}}"/> define region <img class="math" src="_images/math/32a3d6ececc1b56ec736c5ed3d7a39307006e29c.png" alt="\mathcal{K}"/> where the sidelobes are minimized. They should not be confused with the smallest and largest resolvable wavenumber by the optimized array (i.e., array resolution limits).</p>
+<p>The array resolution limits are clearly related with the extent of the region <img class="math" src="_images/math/32a3d6ececc1b56ec736c5ed3d7a39307006e29c.png" alt="\mathcal{K}"/>. The smallest resolvable wavenumber is typically slightly smaller than <img class="math" src="_images/math/4b6fdd556c03d8c862d4851eeb4718ce4a34089f.png" alt="\kappa_{\textrm{min}}"/>. The largest resolvable wavenumber is typically <img class="math" src="_images/math/c6f3f200002701b5b2b4ee1af4d96c9cf3dcb78c.png" alt="\kappa_{\textrm{max}}/2"/>.</p>
+</div>
+</div>
+<div class="section" id="discretization-and-relaxation">
+<h2><a class="toc-backref" href="#contents">Discretization and relaxation</a><a class="headerlink" href="#discretization-and-relaxation" title="Permalink to this headline">¶</a></h2>
+<p>Instead of dealing with the optimization problem of Eq. <a class="reference internal" href="#equation-eqcontinuosminimization">(5)</a> directly, we restrict the possible sensor position to arbitrary discrete locations. We introduce the vector <img class="math" src="_images/math/f38d8ae405c658829c70f94cdcb314f0336a233f.png" alt="\mathbf{x}\in\{0,1\}^N"/> to represent the presence or absence of a sensor at discrete locations.</p>
+<p>The discretized problem is</p>
+<div class="math" id="equation-eqdiscreteminimization">
+<p><span class="eqno">(6)<a class="headerlink" href="#equation-eqdiscreteminimization" title="Permalink to this equation">¶</a></span><img src="_images/math/42ab7c4e961819c885d2a9f39814608b2371a0e7.png" alt="\begin{eqnarray*}
+     \min_{\mathbf{x}}  \left\Vert \mathbf{F}\mathbf{x}\right\Vert _{\infty} \\
+     \mathbf{A}\mathbf{x}  =  \mathbf{b}  \\
+     \mathbf{x}  \in \{0,1\}^{N}
+ \end{eqnarray*}"/></p>
+</div><p>where <img class="math" src="_images/math/fd9bd28d9b5d11f7002d93826f457da85809a3a5.png" alt="\mathbf{F}:\mathbb{R}^{N}\to\mathbb{C}^{M}"/> is a linear operator computing the array response <img class="math" src="_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/> at <img class="math" src="_images/math/4abba779877abb276b98ccb2b4ba9bf2e41947ab.png" alt="M"/> spatial-frequency points. The <a class="reference external" href="https://en.wikipedia.org/wiki/Uniform_norm">infinity norm</a> returns the largest complex modulus of the array response, <img class="math" src="_images/math/2d6ed06c2426dbacf8ec046c8598f7330a4a1f14.png" alt="\left\Vert \mathbf{x}\right\Vert _{\infty}=\max\{|x_{1}|,|x_{2}|,\ldots\}"/>.</p>
+<p>Let <img class="math" src="_images/math/5553ce67efa360bfc489fb45cc2338ca92a6ab6f.png" alt="\boldsymbol{\kappa}_m"/> be the <img class="math" src="_images/math/e9bc7da808d33a16a8347f27a519bd067186aa66.png" alt="m"/>-th spatial frequency and let <img class="math" src="_images/math/92ea2fd5713d7cb2da8f7e95fdf42fb81ee2ab5b.png" alt="\mathbf{p}_n"/> be the position of the <img class="math" src="_images/math/5a939c5280da7202ca4531f175a7780ad5e1f80a.png" alt="n"/>-th possible sensor location. The element <img class="math" src="_images/math/d44f6caf2766a0085e215022b26e62b54926dbaa.png" alt="m,n"/> of <img class="math" src="_images/math/d0fdd2411a0ba9823e9ef1ab94256a799bd363f1.png" alt="\mathbf{F}"/> is</p>
+<div class="math" id="equation-eqfourieropreator">
+<p><span class="eqno">(7)<a class="headerlink" href="#equation-eqfourieropreator" title="Permalink to this equation">¶</a></span><img src="_images/math/c1fa53c1d3cd1facdb2ec11d982d6fc55a059979.png" alt="\begin{eqnarray*}
+     \left[\mathbf{F}\right]_{m,n} &amp; = &amp; \textrm{exp} \left( -i \boldsymbol{\kappa}^T_m \mathbf{p}_n\right)\,.
+ \end{eqnarray*}"/></p>
+</div><p>A linear constraint specifying the number of sensors <img class="math" src="_images/math/87642bf6cce2b7ed8ce23d1e9dccf9186538d1e9.png" alt="\sum_{n=1}^{N} x_n = N_s"/> is enforced within <img class="math" src="_images/math/e1baf8f098d874ae5f0c870f9ef06f918a0bce8a.png" alt="\mathbf{A}\mathbf{x}  =  \mathbf{b}"/>.</p>
+<p>The ojective function in <a class="reference internal" href="#equation-eqdiscreteminimization">(6)</a> is convex, a major improvement from <a class="reference internal" href="#equation-eqcontinuosminimization">(5)</a>! The problem is still very hard because of the binary constraint on the vector <img class="math" src="_images/math/5369e693370bbbd19fea43055b8f96596bff42a6.png" alt="\mathbf{x}"/>.</p>
+<p>As a last step, we relax the problem. Instead of considering the largest sidelobe in terms of complex modulus (<img class="math" src="_images/math/0f8169031626ff5e5dd5a573c0a33e91a6d0d640.png" alt="\left| \mathbf{F}\mathbf{x}\right|"/>), we consider the absolute value of the real and imaginary parts (<img class="math" src="_images/math/03f0e10d2400c3c0cb5eebf8ed85e8b59e494563.png" alt="\left|\textrm{Re}\left(\mathbf{F}\mathbf{x}\right)\right|"/> and <img class="math" src="_images/math/9607b193d84cc2c98c5cbc9c4d985cdba8dc5f32.png" alt="\left|\textrm{Im}\left(\mathbf{F}\mathbf{x}\right)\right|"/>). With this relaxation, the objective function becomes linear.</p>
+<p>The relaxed problem, after introducing the dummy variable <img class="math" src="_images/math/c6f1073b03459dc8090e951908006a430a9e1956.png" alt="y\in\mathbb{R}"/> is</p>
+<div class="math" id="equation-eqrelaxedminimization">
+<p><span class="eqno">(8)<a class="headerlink" href="#equation-eqrelaxedminimization" title="Permalink to this equation">¶</a></span><img src="_images/math/1342018ee48ed789bb0ecf6e05dbf9d5e5cc3561.png" alt="\begin{eqnarray*}
+     \min_{y}\,      y \\
+     \left(\begin{array}{c}
+      \textrm{Re}\left(\mathbf{F}\right)\\
+      \textrm{Im}\left(\mathbf{F}\right)\\
+     -\textrm{Re}\left(\mathbf{F}\right)\\
+     -\textrm{Im}\left(\mathbf{F}\right)
+     \end{array}\right) \mathbf{x} \preceq y\mathbf{1} \\
+     \mathbf{A}\mathbf{x}    =\mathbf{b} \\
+     y\in\mathbb{R}  ,\,\mathbf{x}\in\{0,1\}^{N} \\
+ \end{eqnarray*}"/></p>
+</div><p>where <img class="math" src="_images/math/f44f921e02380801f853632330d8ca997eb3603e.png" alt="\mathbf{1}"/> is a vector of <img class="math" src="_images/math/ec830c85a5fbb48028fe797044da6bdfb924c2fa.png" alt="1"/> s of length <img class="math" src="_images/math/38fc3c40f0c0bc5828a4a2efc2807948b97f72ab.png" alt="4M"/>.</p>
+<p>The optimization problem of Eq. <a class="reference internal" href="#equation-eqrelaxedminimization">(8)</a> is addressed numerically as a <a class="reference external" href="https://en.wikipedia.org/wiki/Linear_programming">mixed integer program (MIP)</a>.</p>
+</div>
+<div class="section" id="how-to-choose-the-parameters">
+<h2><a class="toc-backref" href="#contents">How to choose the parameters?</a><a class="headerlink" href="#how-to-choose-the-parameters" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>TODO</strong> Here we explain how to choose the various parameters. How they affect the results and the computational complexity.</p>
+</div>
+</div>
+<div class="section" id="stretching">
+<h2><a class="toc-backref" href="#contents">Stretching</a><a class="headerlink" href="#stretching" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>TODO</strong> Explain application of scaling property to stretch a normalized array</p>
+</div>
+</div>
+<div class="section" id="bibliography">
+<h2><a class="toc-backref" href="#contents">Bibliography</a><a class="headerlink" href="#bibliography" title="Permalink to this headline">¶</a></h2>
+<dl class="citation">
+<dt class="label" id="marano-et-al-2014b"><span class="brackets"><a class="fn-backref" href="#id1">Maranò_et_al_2014b</a></span></dt>
+<dd><p>Stefano Maranò, Donat Fäh, and Yue M. Lu, <strong>“Sensor Placement for the Analysis of Seismic Surface Waves: Sources of Error, Design Criterion and Array Design Algorithms”</strong>,  Geophys. J. Int. (2014) 197 (3): 1566–1581. <a class="reference external" href="http://academic.oup.com//gji/article/197/3/1566/652229/Sensor-placement-for-the-analysis-of-seismic?guestAccessKey=fbe9d23c-d168-4b3a-8946-118c73b482ad">Free access online</a>.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Scientist’s Documentation</a><ul>
+<li><a class="reference internal" href="#motivation">Motivation</a></li>
+<li><a class="reference internal" href="#important-quantities">Important quantities</a></li>
+<li><a class="reference internal" href="#relationship-with-likelihood-function">Relationship with likelihood function</a></li>
+<li><a class="reference internal" href="#proposed-cost-function">Proposed cost function</a></li>
+<li><a class="reference internal" href="#discretization-and-relaxation">Discretization and relaxation</a></li>
+<li><a class="reference internal" href="#how-to-choose-the-parameters">How to choose the parameters?</a></li>
+<li><a class="reference internal" href="#stretching">Stretching</a></li>
+<li><a class="reference internal" href="#bibliography">Bibliography</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Sensor placement for the analysis of seismic surface waves</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="next chapter">Installation</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Sensor placement for the analysis of seismic surface waves"
+             >previous</a> |</li>
+<li><a href="https://stefanomarano.github.io/SensorPlacement">Home</a> &#187; <a href="index.html">SensorPlacement  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+    <br>
+        &copy; Copyright 2020, Stefano Maranò.
+<!-- <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png"/></a>-->
+ This documentation is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ?
+"https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost +
+"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-4477781-2");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+  </body>
+</html>

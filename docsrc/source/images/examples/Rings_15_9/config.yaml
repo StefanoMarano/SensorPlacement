@@ -1,0 +1,28 @@
+#######################
+# Mandatory parameters
+#######################
+Nsensors: 15                  # The number of sensors available
+Kmin: 0.1                    # minimization area, not resolution limits
+Kmax: 0.9
+
+#######################
+# Optional parameters
+#######################
+# OUTPUT: .               # Folder where output files will be saved. Default is current folder <.>
+# MaximumAperture: 10        # Largest possible aperture of optimized array. Default is computed from Kmin
+# N: 200                     # Desired number of possible sensor positions. Default is <200>
+# M: 200                      # Desired number of frequency samples. Default is <100>
+# CentralSensor: 1           # Force the presence of a sensor at the central position. Default is uncostrained.
+# CentralSensor: 0           # Force the absence of a sensor at the central position. Default is unconstrained.
+### Possible sensor positions
+# Grid: 'rings_uniform'      # Locations on circular rings. This is the default grid.
+# Grid: 'cartesian'          # Locations on a Cartesian grid
+# Grid: 'hexagonal'          # Locations on a Hexagonal grid
+# Grid: 'random'             # Random locations
+# Grid: 'file'               # Locations specified in an external file
+# GridFile: 'InputGrid.csv'  # File with possible locations
+
+#######################
+# Gurobi parameters
+#######################
+TimeLimit: 600.0

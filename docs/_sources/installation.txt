@@ -1,0 +1,35 @@
+============
+Installation
+============
+
+This page describes the steps necessary to install WaveDec.
+
+Install Python
+##############
+
+* Install Python 3 and the Python package installer by running::
+
+    sudo apt-get install python3 python3-pip
+
+* The following Python libraries are needed: ``glob, os, errno, sys, yaml, time, csv, logging, argparse, numpy, scipy, matplotlib``
+
+  On Ubuntu many packages are installed with the default Python 3 installation. You may need to run::
+
+    sudo apt-get install python3-yaml python3-numpy python3-scipy python3-matplotlib
+
+  Alternatively, you may need to try::
+
+    sudo pip3 install <package_name>
+
+
+Install Gurobi
+##############
+
+The computationally intense job is performed by an external, thirt-party, solver Gurobi. Download, install, and get a licence for `Gurobi <http://www.gurobi.com/>`__.
+
+Configure it for usage with Python as instructed in the manual.
+
+If you are installing Gurobi on a machine where you do not have super user privileges, use the ``--user`` flag::
+
+    python setup.py install --user
+
