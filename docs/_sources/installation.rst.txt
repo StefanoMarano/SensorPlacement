@@ -1,8 +1,18 @@
-============
-Installation
-============
+=========================
+Download and Installation
+=========================
 
 This page describes the steps necessary to install software required for the sensor placement algorithm.
+
+Download
+########
+
+The code can be cloned from the `repository <https://github.com/StefanoMarano/SensorPlacement>`__ ::
+
+  git clone https://github.com/StefanoMarano/SensorPlacement.git
+
+or downloaded as `ZIP archive <https://github.com/StefanoMarano/SensorPlacement/archive/master.zip>`__.
+
 
 Install Python and packages
 ###########################
